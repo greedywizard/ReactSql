@@ -12,27 +12,35 @@ const ProductModal = ({ product, onClose }) => {
     //Собственно вызов запроса на добаление или обновление
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // это просто данные которые собираются в объект
         const data = { Title: title, Price: price, Description: description };
 
         if (product) {
-             //запрос на сервер на изменение записи
+             //запрос на сервер на изменение записи, вместо product.id подставляется id записи
+             // и в теле в виде json формата отправляется data
             await axios.put(`http://localhost:5000/api/products/${product.Id}`, data);
         } else {
              //запрос на сервер на создание записи
+             //аналогично
             await axios.post('http://localhost:5000/api/products', data);
         }
+        // закрыввает модалку
         onClose();
     };
 
 
-    //верстка модалки
+      //Отрисовка компоенента
     return (
         <div className="modal">
             <div className="modal-content">
+            {/* Если редактируем запись будет надпись редактировать, если созаем , то создать  */}
                 <h2>{product ? 'Редактировать продукт' : 'Создать продукт'}</h2>
+                {/* Устанавливаем событие на onsubmit */}
                 <form onSubmit={handleSubmit} className="form">
                     <div className="form-group">
                         <label>Название</label>
+                         {/* Устанавливаем событие на onChange дальше аналогично*/}
+                         {/* Эта запись в onChange это анонмимный функции\лямда выражения (e) => setTitle(e.target.value)} */}
                         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </div>
                     <div className="form-group">
