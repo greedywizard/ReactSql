@@ -1,87 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductModal from './ProductModal';
+import RequestModal from './ProductModal';
 import './ProductTable.css';
 
-const ProductTable = () => {
-    //Эта строка кода использует хук useState из React для создания состояния products (просто переменная)
-    // и функции setProducts для его обновления. Через метод записываем, через переменную получаем
-    const [products, setProducts] = useState([])
-    //аналогично
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    //аналогично
+const RequestTable = () => {
+    const [requests, setRequests] = useState([]);
+    const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Запрос на получение всех объектов
-    const fetchProducts = async () => {
-        const response = await axios.get('http://localhost:5000/api/products');
-        setProducts(response.data);
+    const fetchRequests = async () => {
+        const response = await axios.get('http://localhost:5000/requests');
+        setRequests(response.data);
     };
 
-    
-    // это хук в React для управления побочными эффектами в функциональных компонентах, 
-    // такими как загрузка данных, подписки и обновления DOM. 
     useEffect(() => {
-        fetchProducts();
+        fetchRequests();
     }, []);
 
-    
-    //Собственно вызов запроса на дудаление объекта по его id
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
-        fetchProducts();
+        await axios.delete(`http://localhost:5000/requests/${id}`);
+        fetchRequests();
     };
 
-    //Методы которые привязываются к кнопкам и другим элементам
-    const handleEdit = (product) => {
-        setSelectedProduct(product);
+    const handleEdit = (request) => {
+        setSelectedRequest(request);
         setIsModalOpen(true);
     };
 
     const handleAdd = () => {
-        setSelectedProduct(null);
+        setSelectedRequest(null);
         setIsModalOpen(true);
     };
 
     const handleModalClose = () => {
         setIsModalOpen(false);
-        fetchProducts();
+        fetchRequests();
     };
 
-    //Отрисовка компоенента
     return (
         <div className="container">
-            {/* Устанавливаем событие на onClick сами методы чуть выше*/}
-            <button className="btn btn-primary add-btn" onClick={handleAdd}>Добавить продукт</button>
+            <button className="btn btn-primary add-btn" onClick={handleAdd}>Добавить заявку</button>
             <table className="table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Название</th>
-                        <th>Цена</th>
-                        <th>Описание</th>
+                        <th>Дата добавления</th>
+                        <th>Вид авто</th>
+                        <th>Модель авто</th>
+                        <th>Описание проблемы</th>
+                        <th>ФИО клиента</th>
+                        <th>Номер телефона</th>
+                        <th>Статус заявки</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {products.map(product => (
-                        <tr key={product.Id}>
-                            <td>{product.Id}</td>
-                            <td>{product.Title}</td>
-                            <td>{product.Price}</td>
-                            <td>{product.Description}</td>
+                    {requests.map(request => (
+                        <tr key={request.requestID}>
+                            <td>{request.requestID}</td>
+                            <td>{request.startDate}</td>
+                            <td>{request.carType}</td>
+                            <td>{request.carModel}</td>
+                            <td>{request.problemDescryption}</td>
+                            <td>{request.clientName}</td>
+                            <td>{request.clientPhone}</td>
+                            <td>{request.requestStatus}</td>
                             <td>
-                                <button className="btn btn-secondary" onClick={() => handleEdit(product)}>Редактировать</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(product.Id)}>Удалить</button>
+                                <button className="btn btn-secondary" onClick={() => handleEdit(request)}>Редактировать</button>
+                                <button className="btn btn-danger" onClick={() => handleDelete(request.requestID)}>Удалить</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            {/* Отображается или нет модалка. Условие если isModalOpen == true то отображается ингаче нет */}
-            {isModalOpen && <ProductModal product={selectedProduct} onClose={handleModalClose} />}
+            {isModalOpen && <RequestModal request={selectedRequest} onClose={handleModalClose} />}
         </div>
     );
 };
 
-export default ProductTable;
+export default RequestTable;
